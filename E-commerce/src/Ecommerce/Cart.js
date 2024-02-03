@@ -34,9 +34,15 @@ export default function Cart({cart, openProducts }) {
 
   // increse the quantitiy
   const increment = (id) =>{
-    const increase = showProducts.map((items)=>(
-      items.id === id ? {...items,quantity:items.quantity += 1} : items))
-    setShowProducts(increase)
+    
+    const increase = showProducts.map((items) => {
+      if (items.id === id) {
+          items.quantity += 1;
+      }
+      return items;
+    })
+  
+    setShowProducts(increase);
   }
 
   // placing the order
@@ -47,7 +53,6 @@ export default function Cart({cart, openProducts }) {
       },[2000])
       setShowPaymentModal(false)
       setShowProducts([])
-
   }
 
   // calculating the total amount
@@ -66,9 +71,21 @@ export default function Cart({cart, openProducts }) {
   }
 
   const deleteIncart = (id) => {
-        setShowProducts(showProducts.map((items)=>(
-          items.id === id && items.quantity > 1 ? {...items,quantity:items.quantity - 1} : [])));
-  };
+    const showData = showProducts.map((items) => {
+      if (items.id === id) {
+        if (items.quantity > 1) {
+          items.quantity -= 1;
+        } else {
+          return null;
+        }
+      }
+      return items;
+    }).filter(Boolean);
+  
+    setShowProducts(showData);
+  }
+  
+  
 
   return (
     <>
@@ -130,8 +147,8 @@ export default function Cart({cart, openProducts }) {
                       <Card.Text>Quantity : {items.quantity} </Card.Text>
                       </Card.Body>  
                       <Card.Footer>
-                        <Button variant='danger' className='mx-2'><FontAwesomeIcon icon={items.quantity > 1 ? faMinus : faTrash } onClick={()=>deleteIncart(items.id)}/></Button>
-                        <Button ><FontAwesomeIcon icon={faPlus} onClick={()=>increment(items.id)}/></Button>
+                        <Button variant='danger' className='mx-2' onClick={()=>deleteIncart(items.id)}><FontAwesomeIcon icon={items.quantity > 1 ? faMinus : faTrash } /></Button>
+                        <Button onClick={()=>increment(items.id)}><FontAwesomeIcon icon={faPlus} /></Button>
                       </Card.Footer>
                   </Card>
                 </Col>
